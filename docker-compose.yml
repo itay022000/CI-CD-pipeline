@@ -10,7 +10,7 @@ services:
       - 27017
 
   books-service:
-    build: ./Books
+    build: ./books
     restart: always
     container_name: books-service
     depends_on:
