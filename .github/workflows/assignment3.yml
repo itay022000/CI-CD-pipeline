@@ -12,7 +12,7 @@ jobs:
       run: |
         echo "$(date -Iminutes)" > log.txt
         echo "Oren Savich, Itay Tiomkin" >> log.txt
-        docker build -t books-service -f Books/Dockerfile Books
+        docker build -t books-service -f books/Dockerfile books
         if [ $? -eq 0 ]; then
           echo "image successfully built" >> log.txt
         else
