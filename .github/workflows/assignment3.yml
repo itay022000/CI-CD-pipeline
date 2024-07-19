@@ -38,9 +38,7 @@ jobs:
         fi
     - name: Run tests
       run: |
-        sudo apt-get update
-        sudo apt-get install python3 python3-pip -y
-        pip3 install python pytest requests
+        pip install pytest requests
         pytest -v tests/assn3_tests.py > assn3_test_results.txt
         if [ $? -eq 0 ]; then
           echo "tests succeeded" >> log.txt
