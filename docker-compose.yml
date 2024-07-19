@@ -1,16 +1,23 @@
-# Use an official Python runtime as the base image
-FROM python:3.9
+version: '3.8'
 
-# Set the working directory in the container
-WORKDIR /Books
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    expose:
+      - 27017
 
-# Install the Python dependencies
-RUN pip install --no-cache-dir flask flask_restful requests pymongo
-
-# Copy the application files to the working directory
-COPY . .
-
-EXPOSE 5001
-
-# Run the Flask application
-CMD ["python", "booksmain.py"]
+  books-service:
+    build: ./Books
+    restart: always
+    container_name: books-service
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/
+    ports:
+      - "5001:5001"
+    expose:
+      - 5001

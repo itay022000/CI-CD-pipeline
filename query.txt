@@ -1,0 +1,6 @@
+?genre=Fiction
+?title=I%2C%20Robot
+?ISBN=9780385050784
+?publishedDate=2016-06-13
+?author=Mel%20Greene
+?genre=Science%20Fiction
