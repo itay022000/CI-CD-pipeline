@@ -1,0 +1,59 @@
+name: assignment3
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build image
+      run: |
+        docker build -t books-service .
+        echo "$(date -Iminutes)" > log.txt
+        echo "Student Name1, Student Name2" >> log.txt
+        echo "image successfully built" >> log.txt
+    - uses: actions/upload-artifact@v4
+      with:
+        name: log-file
+        path: log.txt
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Docker Compose
+      run: |
+        docker-compose up -d
+        echo "Container up and running" >> log.txt
+    - name: Run tests
+      run: |
+        pip install pytest requests
+        pytest -v tests/assn3_tests.py > assn3_test_results.txt
+        echo "tests succeeded" >> log.txt
+    - uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: assn3_test_results.txt
+    - uses: actions/upload-artifact@v4
+      with:
+        name: log-file
+        path: log.txt
+
+  query:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Docker Compose
+      run: docker-compose up -d
+    - name: Execute queries
+      run: |
+        python query_job.py
+    - uses: actions/upload-artifact@v4
+      with:
+        name: query-results
+        path: response.txt
