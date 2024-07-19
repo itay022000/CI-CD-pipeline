@@ -18,7 +18,7 @@ jobs:
         else
           echo "image not able to be built" >> log.txt
         fi
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: log-file
         path: log.txt
@@ -45,11 +45,11 @@ jobs:
         else
           echo "tests failed" >> log.txt
         fi
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: assn3_test_results.txt
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: log-file
         path: log.txt
@@ -71,7 +71,7 @@ jobs:
           cat response.txt >> query_log.txt
           echo "\n" >> query_log.txt
         done < query.txt
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: query-results
         path: query_log.txt
