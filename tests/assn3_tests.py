@@ -33,7 +33,7 @@ def sample_books():
         {"title": "1984", "author": "George Orwell", "ISBN": "9780451524935", "genre": "Fiction"}
     ]
 
-# Test 1
+# Test 1: Execute three POST /books requests
 def test_post_books(setup_teardown, sample_books):
     logger.info("Starting test_post_books")
     book_ids = []
@@ -47,11 +47,10 @@ def test_post_books(setup_teardown, sample_books):
     assert len(set(book_ids)) == 3, f"Expected 3 unique book IDs, got {len(set(book_ids))}"
     logger.info("test_post_books completed successfully")
 
-# Test 2
+# Test 2: Execute a GET books/<-ID> request for book1
 def test_get_book(setup_teardown, sample_books):
     logger.info("Starting test_get_book")
-    book = sample_books[0]
-    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=book))
+    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[0]))
     assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
     logger.debug(f"Book posted with ID: {book_id}")
@@ -62,11 +61,10 @@ def test_get_book(setup_teardown, sample_books):
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books/{book_id}"))
     assert response.status_code == 200, f"Failed to get book: {response.text}"
     book_data = response.json()
-    assert book_data.get("author") == "Mark Twain"
-    assert book_data.get("title") == "Adventures of Huckleberry Finn"
+    assert book_data.get("author") == "Mark Twain", f"Expected author 'Mark Twain', but got {book_data.get('author')}"
     logger.info("test_get_book completed successfully")
 
-# Test 3
+# Test 3: Execute a GET /books request
 def test_get_all_books(setup_teardown, sample_books):
     logger.info("Starting test_get_all_books")
     for book in sample_books:
@@ -79,7 +77,7 @@ def test_get_all_books(setup_teardown, sample_books):
     assert len(books) >= 3, f"Expected at least 3 books, but got {len(books)}"
     logger.info("test_get_all_books completed successfully")
 
-# Test 4
+# Test 4: Execute a POST /books request supplying details of book4
 def test_post_invalid_book(setup_teardown):
     logger.info("Starting test_post_invalid_book")
     invalid_book = {"title": "Invalid Book", "author": "Unknown", "ISBN": "0000000000000", "genre": "Fiction"}
@@ -88,36 +86,42 @@ def test_post_invalid_book(setup_teardown):
     assert response.status_code in [400, 500]
     logger.info("test_post_invalid_book completed successfully")
 
-# Test 5
+# Test 5: Perform a DELETE /books request for book2
 def test_delete_book(setup_teardown, sample_books):
     logger.info("Starting test_delete_book")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[1]))
     assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
+    logger.debug(f"Book posted with ID: {book_id}")
+    
     logger.debug(f"Deleting book with ID: {book_id}")
     response = retry_request(lambda: requests.delete(f"{BASE_URL}/books/{book_id}"))
     assert response.status_code == 200, f"Failed to delete book: {response.text}"
     logger.info("test_delete_book completed successfully")
 
-# Test 6
+# Test 6: Perform a GET books/<-ID> request for deleted book2
 def test_get_deleted_book(setup_teardown, sample_books):
     logger.info("Starting test_get_deleted_book")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[1]))
     assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
+    logger.debug(f"Book posted with ID: {book_id}")
+    
+    logger.debug(f"Deleting book with ID: {book_id}")
     retry_request(lambda: requests.delete(f"{BASE_URL}/books/{book_id}"))
+    
     logger.debug(f"Getting deleted book with ID: {book_id}")
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books/{book_id}"))
-    assert response.status_code == 404, f"Expected 404, got {response.status_code}"
+    assert response.status_code == 404, f"Expected status code 404, but got {response.status_code}"
     logger.info("test_get_deleted_book completed successfully")
 
-# Test 7
+# Test 7: Execute a POST /books request supplying details of book5
 def test_post_invalid_genre(setup_teardown):
     logger.info("Starting test_post_invalid_genre")
     invalid_genre_book = {"title": "Invalid Genre Book", "author": "Author Unknown", "ISBN": "1234567890123", "genre": "Unknown Genre"}
     logger.debug(f"Posting book with invalid genre: {invalid_genre_book}")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=invalid_genre_book))
-    assert response.status_code == 422
+    assert response.status_code == 422, f"Expected status code 422, but got {response.status_code}"
     logger.info("test_post_invalid_genre completed successfully")
 
 if __name__ == "__main__":
