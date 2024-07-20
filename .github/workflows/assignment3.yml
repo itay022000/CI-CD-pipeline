@@ -47,6 +47,11 @@ jobs:
     - name: Run tests
       run: |
         pytest -vv tests/assn3_tests.py > assn3_test_results.txt
+        if [ $? -eq 0 ]; then
+          echo "tests succeeded" >> log.txt
+        else
+          echo "tests failed" >> log.txt
+        fi
     - name: Shut down containers
       run: docker-compose down   
     - uses: actions/upload-artifact@v4
