@@ -36,12 +36,32 @@ jobs:
         else
           echo "Container failed to run" >> log.txt
         fi
+    - name: Check Docker status
+      run: |
+        docker ps
+        docker-compose logs
+    - name: Health check
+      run: |
+        for i in {1..12}; do
+          echo "Attempt $i: Checking service health..."
+          curl -v http://localhost:5001/books || true
+          sleep 5
+        done
     - name: Install dependencies
       run: |
         pip install pytest requests
     - name: Run tests
       run: |
-        pytest -vv tests/assn3_tests.py > assn3_test_results.txt
+        pytest -vv tests/assn3_tests.py
+    - name: Print test results
+      if: always()
+      run: |
+        cat assn3_test_results.txt
+        cat log.txt
+    - name: Check container logs
+      if: failure()
+      run: |
+        docker-compose logs
     - name: Shut down containers
       run: docker-compose down   
     - uses: actions/upload-artifact@v4
