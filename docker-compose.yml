@@ -8,6 +8,8 @@ services:
       - "27017:27017"
     expose:
       - 27017
+    networks:
+      - app-network
 
   books-service:
     build: ./books
@@ -21,3 +23,9 @@ services:
       - "5001:5001"
     expose:
       - 5001
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

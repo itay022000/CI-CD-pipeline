@@ -36,6 +36,10 @@ jobs:
         else
           echo "Container failed to run" >> log.txt
         fi
+    - name: Check Docker status
+      run: |
+        docker ps
+        docker-compose logs
     - name: Health check
       run: |
         for i in {1..12}; do
@@ -48,12 +52,7 @@ jobs:
         pip install pytest requests
     - name: Run tests
       run: |
-        pytest -v tests/assn3_tests.py > assn3_test_results.txt
-        if [ $? -eq 0 ]; then
-          echo "tests succeeded" >> log.txt
-        else
-          echo "tests failed" >> log.txt
-        fi
+        pytest -vv tests/assn3_tests.py
     - name: Check container logs
       if: failure()
       run: |
