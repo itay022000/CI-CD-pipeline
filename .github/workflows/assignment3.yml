@@ -27,7 +27,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - name: Download log file
+      uses: actions/download-artifact@v4
+      with:
+        name: log-file
+        path: log.txt
     - name: Set up Docker Compose
       run: |
         docker-compose up -d
@@ -52,7 +57,7 @@ jobs:
       with:
         name: log-file
         path: log.txt
-        #overwrite: true
+        overwrite: true
 
   query:
     needs: test
