@@ -40,6 +40,7 @@ def test_post_books(setup_teardown, sample_books):
     for book in sample_books:
         logger.debug(f"Posting book: {book['title']}")
         response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=book))
+        logger.info(f"POST /books response: {response.status_code}, {response.text}")
         assert response.status_code == 201, f"Failed to post book: {response.text}"
         book_id = response.json().get("id")
         assert book_id is not None, "Book ID is None"
@@ -51,6 +52,7 @@ def test_post_books(setup_teardown, sample_books):
 def test_get_book(setup_teardown, sample_books):
     logger.info("Starting test_get_book")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[0]))
+    logger.info(f"POST /books response: {response.status_code}, {response.text}")
     assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
     logger.debug(f"Book posted with ID: {book_id}")
@@ -59,6 +61,7 @@ def test_get_book(setup_teardown, sample_books):
     
     logger.debug(f"Getting book with ID: {book_id}")
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books/{book_id}"))
+    logger.info(f"GET /books/{book_id} response: {response.status_code}, {response.text}")
     assert response.status_code == 200, f"Failed to get book: {response.text}"
     book_data = response.json()
     assert book_data.get("author") == "Mark Twain", f"Expected author 'Mark Twain', but got {book_data.get('author')}"
@@ -72,6 +75,7 @@ def test_get_all_books(setup_teardown, sample_books):
         retry_request(lambda: requests.post(f"{BASE_URL}/books", json=book))
     logger.debug("Getting all books")
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books"))
+    logger.info(f"GET /books response: {response.status_code}, {response.text}")
     assert response.status_code == 200
     books = response.json()
     assert len(books) >= 3, f"Expected at least 3 books, but got {len(books)}"
@@ -83,6 +87,7 @@ def test_post_invalid_book(setup_teardown):
     invalid_book = {"title": "Invalid Book", "author": "Unknown", "ISBN": "0000000000000", "genre": "Fiction"}
     logger.debug(f"Posting invalid book: {invalid_book}")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=invalid_book))
+    logger.info(f"POST /books (invalid) response: {response.status_code}, {response.text}")
     assert response.status_code in [400, 500]
     logger.info("test_post_invalid_book completed successfully")
 
@@ -90,12 +95,14 @@ def test_post_invalid_book(setup_teardown):
 def test_delete_book(setup_teardown, sample_books):
     logger.info("Starting test_delete_book")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[1]))
+    logger.info(f"POST /books response: {response.status_code}, {response.text}")
     assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
     logger.debug(f"Book posted with ID: {book_id}")
     
     logger.debug(f"Deleting book with ID: {book_id}")
     response = retry_request(lambda: requests.delete(f"{BASE_URL}/books/{book_id}"))
+    logger.info(f"DELETE /books/{book_id} response: {response.status_code}, {response.text}")
     assert response.status_code == 200, f"Failed to delete book: {response.text}"
     logger.info("test_delete_book completed successfully")
 
@@ -103,6 +110,7 @@ def test_delete_book(setup_teardown, sample_books):
 def test_get_deleted_book(setup_teardown, sample_books):
     logger.info("Starting test_get_deleted_book")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[1]))
+    logger.info(f"POST /books response: {response.status_code}, {response.text}")
     assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
     logger.debug(f"Book posted with ID: {book_id}")
@@ -112,6 +120,7 @@ def test_get_deleted_book(setup_teardown, sample_books):
     
     logger.debug(f"Getting deleted book with ID: {book_id}")
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books/{book_id}"))
+    logger.info(f"GET /books/{book_id} response: {response.status_code}, {response.text}")
     assert response.status_code == 404, f"Expected status code 404, but got {response.status_code}"
     logger.info("test_get_deleted_book completed successfully")
 
@@ -121,6 +130,7 @@ def test_post_invalid_genre(setup_teardown):
     invalid_genre_book = {"title": "Invalid Genre Book", "author": "Author Unknown", "ISBN": "1234567890123", "genre": "Unknown Genre"}
     logger.debug(f"Posting book with invalid genre: {invalid_genre_book}")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=invalid_genre_book))
+    logger.info(f"POST /books (invalid genre) response: {response.status_code}, {response.text}")
     assert response.status_code == 422, f"Expected status code 422, but got {response.status_code}"
     logger.info("test_post_invalid_genre completed successfully")
 
