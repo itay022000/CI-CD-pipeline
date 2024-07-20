@@ -4,12 +4,17 @@ from bson import ObjectId
 import requests
 from pymongo import MongoClient
 import os
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 api = Api(app)
 
 @app.route('/books', methods=['POST'])
 def add_new_book():
+    logger.debug("Received POST request to /books")
     if request.content_type != 'application/json':
         return jsonify({"error": "Unsupported media type"}), 415
 
@@ -173,7 +178,9 @@ class LibraryManager:
 
     def __init__(self):
         mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
+        logger.debug(f"Connecting to MongoDB with URI: {mongo_uri}")
         self.client = MongoClient(mongo_uri)
+        logger.debug("MongoDB connection established")
         self.db = self.client['library_db']
         self.books = self.db['books']
         self.ratings = self.db['ratings']
