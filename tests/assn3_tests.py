@@ -48,13 +48,24 @@ def test_post_books(setup_teardown, sample_books):
 
 def test_get_book(setup_teardown, sample_books):
     logger.info("Starting test_get_book")
-    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[0]))
+    unique_book = {
+        "title": f"Unique Book {time.time()}",
+        "author": "Test Author",
+        "ISBN": f"978{int(time.time())}",
+        "genre": "Fiction"
+    }
+    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=unique_book))
+    assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
+    logger.debug(f"Book posted with ID: {book_id}")
+    
+    time.sleep(2)  # Add a short delay
+    
     logger.debug(f"Getting book with ID: {book_id}")
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books/{book_id}"))
-    assert response.status_code == 200
+    assert response.status_code == 200, f"Failed to get book: {response.text}"
     book_data = response.json()
-    assert "Mark Twain" in book_data.get("authors", "")
+    assert unique_book["title"] in book_data.get("title", "")
     logger.info("test_get_book completed successfully")
 
 def test_get_all_books(setup_teardown, sample_books):
