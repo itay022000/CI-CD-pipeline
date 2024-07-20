@@ -49,9 +49,9 @@ def test_post_books(setup_teardown, sample_books):
 def test_get_book(setup_teardown, sample_books):
     logger.info("Starting test_get_book")
     unique_book = {
-        "title": f"Unique Book {time.time()}",
-        "author": "Test Author",
-        "ISBN": f"978{int(time.time())}",
+        "title": "The Catcher in the Rye",
+        "author": "J.D. Salinger",
+        "ISBN": "9780316769174",
         "genre": "Fiction"
     }
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=unique_book))
