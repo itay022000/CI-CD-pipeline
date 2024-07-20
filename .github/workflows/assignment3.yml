@@ -36,6 +36,9 @@ jobs:
         else
           echo "Container failed to run" >> log.txt
         fi
+    - name: Health check
+      run: |
+        timeout 60s bash -c 'until curl -s http://localhost:5001/books > /dev/null; do sleep 5; done'
     - name: Install dependencies
       run: |
         pip install pytest requests
