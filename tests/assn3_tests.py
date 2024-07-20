@@ -2,7 +2,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.getenv('BASE_URL', 'http://localhost:5001')
+BASE_URL = "http://books-service:5001"
 
 @pytest.fixture(scope="module")
 def setup_teardown():
