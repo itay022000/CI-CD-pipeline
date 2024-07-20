@@ -36,13 +36,6 @@ jobs:
         else
           echo "Container failed to run" >> log.txt
         fi
-    - name: Health check
-      run: |
-        for i in {1..12}; do
-          echo "Attempt $i: Checking service health..."
-          curl -v http://localhost:5001/books || true
-          sleep 5
-        done
     - name: Install dependencies
       run: |
         pip install pytest requests
