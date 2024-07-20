@@ -52,7 +52,7 @@ jobs:
       with:
         name: log-file
         path: log.txt
-        overwrite: true
+        #overwrite: true
 
   query:
     needs: test
