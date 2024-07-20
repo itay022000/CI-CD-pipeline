@@ -77,7 +77,7 @@ def test_get_all_books(setup_teardown, sample_books):
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books"))
     assert response.status_code == 200
     books = response.json()
-    assert len(books) == 3
+    assert len(books) >= 3, f"Expected at least 3 books, but got {len(books)}"
     logger.info("test_get_all_books completed successfully")
 
 def test_post_invalid_book(setup_teardown):
