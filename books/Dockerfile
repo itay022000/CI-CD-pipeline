@@ -1,6 +1,9 @@
 # Use an official Python runtime as the base image
 FROM python:3.9
 
+# Set PYTHONUNBUFFERED environment variable
+ENV PYTHONUNBUFFERED=1
+
 # Set the working directory in the container
 WORKDIR /Books
 
