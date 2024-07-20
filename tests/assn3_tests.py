@@ -28,9 +28,14 @@ def setup_teardown():
 @pytest.fixture
 def sample_books():
     return [
-        {"title": "Adventures of Huckleberry Finn", "author": "Mark Twain", "ISBN": "9780142437179", "genre": "Fiction"},
-        {"title": "The Best of Isaac Asimov", "author": "Isaac Asimov", "ISBN": "9780385121741", "genre": "Science Fiction"},
-        {"title": "1984", "author": "George Orwell", "ISBN": "9780451524935", "genre": "Fiction"}
+        {"title": "Adventures of Huckleberry Finn", "ISBN": "9780520343641", "genre": "Fiction"},
+        {"title": "The Best of Isaac Asimov", "ISBN": "9780385050784", "genre": "Science Fiction"},
+        {"title": "Fear No Evil", "ISBN": "9780394558783", "genre": "Biography"},
+        {"title": "No such book", "ISBN": "0000001111111", "genre": "Biography"},
+        {"title": "The Greatest Joke Book Ever", "authors": "Mel Greene", "ISBN": "9780380798490", "genre": "Jokes"},
+        {"title": "The Adventures of Tom Sawyer", "ISBN": "9780195810400", "genre": "Fiction"},
+        {"title": "I, Robot", "ISBN": "9780553294385", "genre": "Science Fiction"},
+        {"title": "Second Foundation", "ISBN": "9780553293364", "genre": "Science Fiction"}
     ]
 
 # Test 1: Execute three POST /books requests
