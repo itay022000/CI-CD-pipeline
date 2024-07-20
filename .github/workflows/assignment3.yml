@@ -36,7 +36,7 @@ jobs:
         else
           echo "Container failed to run" >> log.txt
         fi
-      - name: Check Docker status
+    - name: Check Docker status
       run: |
         docker ps
         docker-compose logs
@@ -52,12 +52,12 @@ jobs:
         pip install pytest requests
     - name: Run tests
       run: |
-        pytest -v tests/assn3_tests.py > assn3_test_results.txt
-        if [ $? -eq 0 ]; then
-          echo "tests succeeded" >> log.txt
-        else
-          echo "tests failed" >> log.txt
-        fi
+        pytest -vv tests/assn3_tests.py
+    - name: Print test results
+      if: always()
+      run: |
+        cat assn3_test_results.txt
+        cat log.txt
     - name: Check container logs
       if: failure()
       run: |
