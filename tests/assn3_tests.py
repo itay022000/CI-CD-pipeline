@@ -33,6 +33,7 @@ def sample_books():
         {"title": "1984", "author": "George Orwell", "ISBN": "9780451524935", "genre": "Fiction"}
     ]
 
+# Test 1
 def test_post_books(setup_teardown, sample_books):
     logger.info("Starting test_post_books")
     book_ids = []
@@ -46,15 +47,11 @@ def test_post_books(setup_teardown, sample_books):
     assert len(set(book_ids)) == 3, f"Expected 3 unique book IDs, got {len(set(book_ids))}"
     logger.info("test_post_books completed successfully")
 
+# Test 2
 def test_get_book(setup_teardown, sample_books):
     logger.info("Starting test_get_book")
-    unique_book = {
-        "title": "The Catcher in the Rye",
-        "author": "J.D. Salinger",
-        "ISBN": "9780316769174",
-        "genre": "Fiction"
-    }
-    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=unique_book))
+    book = sample_books[0]
+    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=book))
     assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
     logger.debug(f"Book posted with ID: {book_id}")
@@ -65,9 +62,11 @@ def test_get_book(setup_teardown, sample_books):
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books/{book_id}"))
     assert response.status_code == 200, f"Failed to get book: {response.text}"
     book_data = response.json()
-    assert unique_book["title"] in book_data.get("title", "")
+    assert book_data.get("author") == "Mark Twain"
+    assert book_data.get("title") == "Adventures of Huckleberry Finn"
     logger.info("test_get_book completed successfully")
 
+# Test 3
 def test_get_all_books(setup_teardown, sample_books):
     logger.info("Starting test_get_all_books")
     for book in sample_books:
@@ -80,14 +79,39 @@ def test_get_all_books(setup_teardown, sample_books):
     assert len(books) >= 3, f"Expected at least 3 books, but got {len(books)}"
     logger.info("test_get_all_books completed successfully")
 
+# Test 4
 def test_post_invalid_book(setup_teardown):
     logger.info("Starting test_post_invalid_book")
     invalid_book = {"title": "Invalid Book", "author": "Unknown", "ISBN": "0000000000000", "genre": "Fiction"}
     logger.debug(f"Posting invalid book: {invalid_book}")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=invalid_book))
-    assert response.status_code in [422, 500]
+    assert response.status_code in [400, 500]
     logger.info("test_post_invalid_book completed successfully")
 
+# Test 5
+def test_delete_book(setup_teardown, sample_books):
+    logger.info("Starting test_delete_book")
+    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[1]))
+    assert response.status_code == 201, f"Failed to post book: {response.text}"
+    book_id = response.json().get("id")
+    logger.debug(f"Deleting book with ID: {book_id}")
+    response = retry_request(lambda: requests.delete(f"{BASE_URL}/books/{book_id}"))
+    assert response.status_code == 200, f"Failed to delete book: {response.text}"
+    logger.info("test_delete_book completed successfully")
+
+# Test 6
+def test_get_deleted_book(setup_teardown, sample_books):
+    logger.info("Starting test_get_deleted_book")
+    response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[1]))
+    assert response.status_code == 201, f"Failed to post book: {response.text}"
+    book_id = response.json().get("id")
+    retry_request(lambda: requests.delete(f"{BASE_URL}/books/{book_id}"))
+    logger.debug(f"Getting deleted book with ID: {book_id}")
+    response = retry_request(lambda: requests.get(f"{BASE_URL}/books/{book_id}"))
+    assert response.status_code == 404, f"Expected 404, got {response.status_code}"
+    logger.info("test_get_deleted_book completed successfully")
+
+# Test 7
 def test_post_invalid_genre(setup_teardown):
     logger.info("Starting test_post_invalid_genre")
     invalid_genre_book = {"title": "Invalid Genre Book", "author": "Author Unknown", "ISBN": "1234567890123", "genre": "Unknown Genre"}
