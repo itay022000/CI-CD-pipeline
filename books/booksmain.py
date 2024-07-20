@@ -172,7 +172,7 @@ class LibraryManager:
     VALID_GENRES = ["Biography", "Children", "Fantasy", "Fiction", "Other", "Science", "Science Fiction"]
 
     def __init__(self):
-        mongo_uri = os.getenv('MONGO_URI', 'mongodb://mongodb:27017/')
+        mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
         self.client = MongoClient(mongo_uri)
         self.db = self.client['library_db']
         self.books = self.db['books']
