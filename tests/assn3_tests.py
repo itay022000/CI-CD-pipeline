@@ -108,7 +108,7 @@ def test_get_deleted_book(setup_teardown, sample_books):
     cleanup_books()
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=sample_books[1]))
     logger.info(f"POST /books response: {response.status_code}, {response.text}")
-    assert response.status_code == 500, f"Failed to post book: {response.text}"
+    assert response.status_code == 201, f"Failed to post book: {response.text}"
     book_id = response.json().get("id")
     
     retry_request(lambda: requests.delete(f"{BASE_URL}/books/{book_id}"))
