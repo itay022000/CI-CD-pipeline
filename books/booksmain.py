@@ -34,8 +34,10 @@ def add_new_book():
         return jsonify({"error": str(e)}), 422
     except ExternalAPIServiceError as e:
         return jsonify({"error": str(e)}), 500
-    except APIBookNotFoundError as e:
-        return jsonify({"error": str(e)}), 500
+    except APIBookNotFoundError:
+        # If the book is not found in Google Books API, we still add it with minimal information
+        book_id = library_manager.add_book(isbn, title, genre, use_api=False)
+        return jsonify({"id": str(book_id), "warning": "Book not found in Google Books API, added with minimal information"}), 201
 
 @app.route('/books/<book_id>', methods=['PUT'])
 def modify_book(book_id):
@@ -137,7 +139,7 @@ def fetch_top_ratings():
     return jsonify(top_ratings), 200
 
 class Book:
-    def __init__(self, ISBN, title, genre):
+    def __init__(self, ISBN, title, genre, use_api=True):
         self.title = title
         self.authors = ""
         self.ISBN = ISBN
@@ -145,22 +147,28 @@ class Book:
         self.publisher = ""
         self.published_date = ""
         self.id = None
-        self.fetch_from_api()
+        if use_api:
+            self.fetch_from_api()
+        else:
+            self.authors = "Unknown"
+            self.publisher = "Unknown"
+            self.published_date = "Unknown"
 
     def fetch_from_api(self):
         google_books_url = f'https://www.googleapis.com/books/v1/volumes?q=isbn:{self.ISBN}'
         try:
             response = requests.get(google_books_url)
             response.raise_for_status()
-            book_data = response.json()['items'][0]['volumeInfo']
+            book_data = response.json()
+            if 'items' not in book_data or len(book_data['items']) == 0:
+                raise APIBookNotFoundError(f"Book with ISBN {self.ISBN} not found in the Google Books API.")
+            book_info = book_data['items'][0]['volumeInfo']
         except requests.exceptions.RequestException:
             raise ExternalAPIServiceError("Error occurred while calling the Google Books API.")
-        except (KeyError, IndexError):
-            raise APIBookNotFoundError(f"Book with ISBN {self.ISBN} not found in the Google Books API.")
 
-        self.authors = " and ".join(book_data.get("authors", [])) if book_data.get("authors") else "missing"
-        self.publisher = book_data.get("publisher", "missing")
-        self.published_date = book_data.get("publishedDate", "missing")
+        self.authors = " and ".join(book_info.get("authors", [])) if book_info.get("authors") else "Unknown"
+        self.publisher = book_info.get("publisher", "Unknown")
+        self.published_date = book_info.get("publishedDate", "Unknown")
 
     def json(self):
         return {
@@ -186,19 +194,24 @@ class LibraryManager:
         self.ratings = self.db['ratings']
         self.top_books = None
 
-    def add_book(self, ISBN, title, genre):
-        if not ISBN or not title or not genre:
-            raise RequiredFieldMissingError("Missing required fields.")
-        if self.books.find_one({"ISBN": ISBN}):
-            raise DuplicateBookError("This book is already in the library.")
-        if genre not in self.VALID_GENRES:
-            raise GenreNotValidError("Invalid genre.")
+def add_book(self, ISBN, title, genre):
+    if not ISBN or not title or not genre:
+        raise RequiredFieldMissingError("Missing required fields.")
+    if self.books.find_one({"ISBN": ISBN}):
+        raise DuplicateBookError("This book is already in the library.")
+    if genre not in self.VALID_GENRES:
+        raise GenreNotValidError("Invalid genre.")
 
+    try:
         new_book = Book(ISBN, title, genre)
-        book_id = self.books.insert_one(new_book.json()).inserted_id
-        self.ratings.insert_one({'values': [], 'average': 0, 'title': title, 'book_id': book_id})
+    except APIBookNotFoundError:
+        # If the book is not found in Google Books API, create a book with minimal information
+        new_book = Book(ISBN, title, genre, use_api=False)
 
-        return str(book_id)
+    book_id = self.books.insert_one(new_book.json()).inserted_id
+    self.ratings.insert_one({'values': [], 'average': 0, 'title': title, 'book_id': book_id})
+
+    return str(book_id)
 
     def update_book(self, book_id, update_data):
         try:
