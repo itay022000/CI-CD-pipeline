@@ -55,6 +55,7 @@ jobs:
     - name: Shut down containers
       run: docker-compose down   
     - uses: actions/upload-artifact@v4
+      continue-on-error: true
       with:
         name: test-results
         path: assn3_test_results.txt
