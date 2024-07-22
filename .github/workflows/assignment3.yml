@@ -26,8 +26,6 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
-    outputs:
-      tests-passed: ${{ steps.tests-outcome.outputs.tests-passed }}
     steps:
     - uses: actions/checkout@v3
     - name: Download log file
@@ -75,11 +73,11 @@ jobs:
   query:
     needs: test
     runs-on: ubuntu-latest
-    #if: ${{ needs.test.outputs.tests-passed == 'true' }}
+    if: ${{ env.tests-passed == 'true' }}
     steps:
-    - name: Print test result
-      run: echo "tests-passed=${{ needs.test.outputs.tests-passed }}"
     - uses: actions/checkout@v3
+    - name: Print test result
+      run: echo "tests-passed=${{ env.tests-passed }}"
     - name: Set up Docker Compose
       run: docker-compose up -d
     - name: Execute queries
