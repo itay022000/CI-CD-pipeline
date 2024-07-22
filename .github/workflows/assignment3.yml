@@ -75,7 +75,7 @@ jobs:
   query:
     needs: test
     runs-on: ubuntu-latest
-    if: needs.test.outputs.tests-passed == 'true'
+    if: ${{ needs.test.outputs.tests-passed == 'true' }}
     steps:
     - uses: actions/checkout@v3
     - name: Set up Docker Compose
