@@ -47,6 +47,7 @@ jobs:
       run: |
         pip install pytest requests
     - name: Run tests
+      id: tests-outcome
       run: |
         pytest -vv tests/assn3_tests.py | tee assn3_test_results.txt
         if [ ${PIPESTATUS[0]} -eq 0 ]; then
