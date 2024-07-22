@@ -68,6 +68,7 @@ jobs:
   query:
     needs: test
     runs-on: ubuntu-latest
+    if: success()
     steps:
     - uses: actions/checkout@v3
     - name: Set up Docker Compose
