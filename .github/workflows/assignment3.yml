@@ -52,13 +52,13 @@ jobs:
         pytest -vv tests/assn3_tests.py | tee assn3_test_results.txt
         if [ ${PIPESTATUS[0]} -eq 0 ]; then
           echo "tests succeeded" >> log.txt
-          echo "tests-passed=true" >> $GITHUB_ENV
+          echo "tests-passed=true" >> $GITHUB_OUTPUT
         else
           echo "tests failed" >> log.txt
-          echo "tests-passed=false" >> $GITHUB_ENV
+          echo "tests-passed=false" >> $GITHUB_OUTPUT
         fi
     - name: Output test result
-      run: echo "tests-passed=${{ env.tests-passed }}"
+      run: echo "tests-passed=${{ steps.tests-outcome.outputs.tests-passed }}"
     - name: Shut down containers
       run: docker-compose down   
     - uses: actions/upload-artifact@v4
