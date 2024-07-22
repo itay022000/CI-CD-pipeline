@@ -43,6 +43,7 @@ def cleanup_books():
     for book in response.json():
         retry_request(lambda: requests.delete(f"{BASE_URL}/books/{book['id']}"))
 
+#test 1
 def test_post_books(setup_teardown, sample_books):
     logger.info("Starting test_post_books")
     cleanup_books()
@@ -56,6 +57,7 @@ def test_post_books(setup_teardown, sample_books):
             book_ids.append(response.json().get("id"))
     assert len(set(book_ids)) == 3, f"Expected 3 unique book IDs, got {len(set(book_ids))}"
 
+#test 2
 def test_get_book(setup_teardown, sample_books):
     logger.info("Starting test_get_book")
     cleanup_books()
@@ -70,6 +72,7 @@ def test_get_book(setup_teardown, sample_books):
     book_data = response.json()
     assert book_data.get("title") == sample_books[0]['title'], f"Expected title '{sample_books[0]['title']}', but got '{book_data.get('title')}'"
 
+#test 3
 def test_get_all_books(setup_teardown, sample_books):
     logger.info("Starting test_get_all_books")
     cleanup_books()
@@ -83,6 +86,7 @@ def test_get_all_books(setup_teardown, sample_books):
     books = response.json()
     assert len(books) >= 3, f"Expected at least 3 books, but got {len(books)}"
 
+#test 4
 def test_post_invalid_book(setup_teardown):
     logger.info("Starting test_post_invalid_book")
     invalid_book = {"title": "Invalid Book", "author": "Unknown", "ISBN": "0000000000000", "genre": "Fiction"}
@@ -91,6 +95,7 @@ def test_post_invalid_book(setup_teardown):
     logger.info(f"POST /books (invalid) response: {response.status_code}, {response.text}")
     assert response.status_code in [400, 500]
 
+#test 5
 def test_delete_book(setup_teardown, sample_books):
     logger.info("Starting test_delete_book")
     cleanup_books()
@@ -103,6 +108,7 @@ def test_delete_book(setup_teardown, sample_books):
     logger.info(f"DELETE /books/{book_id} response: {response.status_code}, {response.text}")
     assert response.status_code == 200, f"Failed to delete book: {response.text}"
 
+#test 6
 def test_get_deleted_book(setup_teardown, sample_books):
     logger.info("Starting test_get_deleted_book")
     cleanup_books()
@@ -117,13 +123,14 @@ def test_get_deleted_book(setup_teardown, sample_books):
     logger.info(f"GET /books/{book_id} response: {response.status_code}, {response.text}")
     assert response.status_code == 404, f"Expected status code 404, but got {response.status_code}"
 
+#test 7
 def test_post_invalid_genre(setup_teardown):
     logger.info("Starting test_post_invalid_genre")
     invalid_genre_book = {"title": "Invalid Genre Book", "author": "Author Unknown", "ISBN": "1234567890123", "genre": "Unknown Genre"}
     logger.debug(f"Posting book with invalid genre: {invalid_genre_book}")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=invalid_genre_book))
     logger.info(f"POST /books (invalid genre) response: {response.status_code}, {response.text}")
-    assert response.status_code == 422, f"Expected status code 422, but got {response.status_code}"
+    assert response.status_code == 7, f"Expected status code 422, but got {response.status_code}"
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])

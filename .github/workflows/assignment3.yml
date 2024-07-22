@@ -46,8 +46,8 @@ jobs:
         pip install pytest requests
     - name: Run tests
       run: |
-        pytest -vv tests/assn3_tests.py > assn3_test_results.txt
-        if [ $? -eq 0 ]; then
+        pytest -vv tests/assn3_tests.py | tee assn3_test_results.txt
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
           echo "tests succeeded" >> log.txt
         else
           echo "tests failed" >> log.txt
