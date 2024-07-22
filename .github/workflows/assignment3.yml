@@ -27,7 +27,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     outputs:
-      tests-passed: ${{ steps.tests-outcome.outputs.passed }}
+      tests-passed: ${{ steps.set-output.outputs.tests-passed }}
     steps:
     - uses: actions/checkout@v4
     - name: Download log file
@@ -51,10 +51,10 @@ jobs:
         pytest -vv tests/assn3_tests.py | tee assn3_test_results.txt
         if [ ${PIPESTATUS[0]} -eq 0 ]; then
           echo "tests succeeded" >> log.txt
-          echo "::set-output name=passed::true"
+          echo "::set-output name=tests-passed::true"
         else
           echo "tests failed" >> log.txt
-          echo "::set-output name=passed::false"
+          echo "::set-output name=tests-passed::false"
         fi
     - name: Shut down containers
       run: docker-compose down   
