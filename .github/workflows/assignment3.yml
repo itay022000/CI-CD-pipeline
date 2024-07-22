@@ -49,8 +49,10 @@ jobs:
         pytest -vv tests/assn3_tests.py | tee assn3_test_results.txt
         if [ ${PIPESTATUS[0]} -eq 0 ]; then
           echo "tests succeeded" >> log.txt
+          echo "::set-output name=passed::true"
         else
           echo "tests failed" >> log.txt
+          echo "::set-output name=passed::false"
         fi
     - name: Shut down containers
       run: docker-compose down   
@@ -68,7 +70,7 @@ jobs:
   query:
     needs: test
     runs-on: ubuntu-latest
-    if: success()
+    if: needs.test.outputs.tests-passed == 'true'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Docker Compose
