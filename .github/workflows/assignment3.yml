@@ -26,6 +26,8 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
+    outputs:
+      tests-passed: ${{ steps.tests-outcome.outputs.passed }}
     steps:
     - uses: actions/checkout@v4
     - name: Download log file
