@@ -130,7 +130,7 @@ def test_post_invalid_genre(setup_teardown):
     logger.debug(f"Posting book with invalid genre: {invalid_genre_book}")
     response = retry_request(lambda: requests.post(f"{BASE_URL}/books", json=invalid_genre_book))
     logger.info(f"POST /books (invalid genre) response: {response.status_code}, {response.text}")
-    assert response.status_code == 7, f"Expected status code 422, but got {response.status_code}"
+    assert response.status_code == 422, f"Expected status code 422, but got {response.status_code}"
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])
