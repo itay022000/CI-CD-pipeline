@@ -57,6 +57,8 @@ jobs:
           echo "tests failed" >> log.txt
           echo "::set-output name=tests-passed::false"
         fi
+    - name: Output test result
+      run: echo "tests-passed=${{ steps.tests-outcome.outputs.tests-passed }}"
     - name: Shut down containers
       run: docker-compose down   
     - uses: actions/upload-artifact@v4
