@@ -37,7 +37,7 @@ jobs:
         path: ./
     - name: Set up Docker Compose
       run: |
-        docker-compose up -d
+        docker compose up -d
         if [ $? -eq 0 ]; then
           echo "Container up and running" >> log.txt
         else
@@ -60,7 +60,7 @@ jobs:
     - name: Output test result
       run: echo "tests-passed=${{ steps.tests-outcome.outputs.tests-passed }}"
     - name: Shut down containers
-      run: docker-compose down   
+      run: docker compose down   
     - uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -81,7 +81,7 @@ jobs:
     - name: Print test result
       run: echo "tests-passed=${{ needs.test.outputs.tests-passed }}"
     - name: Set up Docker Compose
-      run: docker-compose up -d
+      run: docker compose up -d
     - name: Execute queries
       run: |
         sleep 10
