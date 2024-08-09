@@ -168,7 +168,7 @@ def test_post_books():
         res = requests.post(BASE_URL, json=book)
         assert res.status_code == 201
         res_data = res.json()
-        assert "ID" in res_data
+        assert "id" in res_data
         books_data.append(res_data)
         books_data_tuples = [frozenset(book.items()) for book in books_data]
     assert len(set(books_data_tuples)) == 3
@@ -181,7 +181,7 @@ def test_get_query():
 
 
 def test_delete_book():
-    res = requests.delete(f"{BASE_URL}/{books_data[0]['ID']}")
+    res = requests.delete(f"{BASE_URL}/{books_data[0]['id']}")
     assert res.status_code == 200
 
 
