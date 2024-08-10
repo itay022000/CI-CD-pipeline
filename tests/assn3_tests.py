@@ -82,7 +82,7 @@ def test_get_all_books(setup_teardown, sample_books):
     logger.debug("Getting all books")
     response = retry_request(lambda: requests.get(f"{BASE_URL}/books"))
     logger.info(f"GET /books response: {response.status_code}, {response.text}")
-    assert response.status_code == 404
+    assert response.status_code == 200
     books = response.json()
     assert len(books) >= 3, f"Expected at least 3 books, but got {len(books)}"
 
